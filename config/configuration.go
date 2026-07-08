@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const DateLayout = "2006-01-02"
+const dateLayout = "2006-01-02"
 
 // Config holds validated CLI settings for querying a cookie log.
 type Config struct {
@@ -31,7 +31,7 @@ func Parse(args []string) (Config, error) {
 		return Config{}, fmt.Errorf("-d is required")
 	}
 
-	date, err := time.Parse(DateLayout, *dateStr)
+	date, err := time.Parse(dateLayout, *dateStr)
 	if err != nil {
 		return Config{}, fmt.Errorf("invalid -d value %q, expected YYYY-MM-DD: %w", *dateStr, err)
 	}

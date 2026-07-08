@@ -3,9 +3,49 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
+
+func writeTestCSV(t *testing.T, name, content string) string {
+	t.Helper()
+
+	root := projectRoot(t)
+	dir := filepath.Join(root, "tmp")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatalf("MkdirAll() error = %v", err)
+	}
+
+	safeName := strings.ReplaceAll(t.Name(), "/", "_") + "_" + name
+	path := filepath.Join(dir, safeName)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	return path
+}
+
+func projectRoot(t *testing.T) string {
+	t.Helper()
+
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd() error = %v", err)
+	}
+
+	dir := wd
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			t.Fatal("could not find project root")
+		}
+		dir = parent
+	}
+}
 
 func TestParseValidArgs(t *testing.T) {
 	cfg, err := Parse([]string{"-f", "cookie_log.csv", "-d", "2018-12-09"})
@@ -61,18 +101,19 @@ func TestParseUnknownFlag(t *testing.T) {
 }
 
 func TestOpenFileSuccess(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "log.csv")
-	if err := os.WriteFile(path, []byte("cookie,timestamp\n"), 0o644); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
+	path := writeTestCSV(t, "log.csv", "cookie,timestamp\n")
 
 	cfg := Config{FilePath: path, Date: time.Now()}
 	file, err := cfg.OpenFile()
 	if err != nil {
 		t.Fatalf("OpenFile() error = %v", err)
 	}
-	file.Close()
+
+	defer func() {
+		if cerr := file.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
 }
 
 func TestOpenFileNotFound(t *testing.T) {

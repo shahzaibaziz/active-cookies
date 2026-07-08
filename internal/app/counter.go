@@ -1,9 +1,5 @@
 package app
 
-// counter tallies cookie occurrences while preserving first-seen order.
-// Order is preserved purely so ties resolve deterministically; the spec
-// does not require a particular order for tied results, but deterministic
-// output is easier to test and reason about than map iteration order.
 type counter struct {
 	counts map[string]int
 	order  []string
@@ -20,23 +16,21 @@ func (c *counter) add(cookie string) {
 	c.counts[cookie]++
 }
 
-// mostActive returns every cookie whose count equals the highest count seen.
-// If nothing was added, it returns an empty (nil) slice.
 func (c *counter) mostActive() []string {
-	max := 0
+	maxValue := 0
 	for _, n := range c.counts {
-		if n > max {
-			max = n
+		if n > maxValue {
+			maxValue = n
 		}
 	}
 
-	if max == 0 {
+	if maxValue == 0 {
 		return nil
 	}
 
 	var result []string
 	for _, cookie := range c.order {
-		if c.counts[cookie] == max {
+		if c.counts[cookie] == maxValue {
 			result = append(result, cookie)
 		}
 	}

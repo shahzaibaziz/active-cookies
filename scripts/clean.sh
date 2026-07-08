@@ -3,12 +3,18 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-BINARY="${BINARY:-activecookie}"
-IMAGE="${IMAGE:-activecookie}"
+BIN_DIR="${BIN_DIR:-bin}"
+BINARY="${BINARY:-${BIN_DIR}/main}"
+IMAGE_NAME="${IMAGE_NAME:-activecookie}"
+IMAGE="${IMAGE:-${IMAGE_NAME}}"
 DEV_IMAGE="${DEV_IMAGE:-activecookie-dev}"
 
-echo "==> removing local binary"
-rm -f "${BINARY}"
+echo "==> removing local binaries"
+rm -rf "${BIN_DIR}"
+rm -f activecookie
+
+echo "==> removing tmp directory"
+rm -rf tmp
 
 remove_image() {
   local name="$1"

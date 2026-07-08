@@ -1,1 +1,7 @@
 .idea
+tmp/
+bin/
+activecookie
+/data/
+
+results.txt

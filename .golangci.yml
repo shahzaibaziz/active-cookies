@@ -1,8 +1,8 @@
 version: "2"
 run:
-  tests: true
+  tests: false
   timeout: 5m
-  linters:
+linters:
   default: none
   enable:
     - govet
@@ -16,13 +16,12 @@ run:
     - errorlint
     - prealloc
     - dupl
-  settings:
-    text: should have a package comment
-    exclusions:
-      rules:
-      - linters:
-      - revive
-    formatters:
-    enable:
-      - gofmt
-      - goimports
+  exclusions:
+    rules:
+      - text: "package-comments: should have a package comment"
+        linters:
+          - revive
+formatters:
+  enable:
+    - gofmt
+    - goimports

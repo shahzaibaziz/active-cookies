@@ -26,15 +26,7 @@ func sameUTCDate(a, b time.Time) bool {
 	return ay == by && am == bm && ad == bd
 }
 
-// FindMostActive reads a cookie log from r and returns every cookie seen
-// the most times on the given target date (UTC). Malformed lines are
-// collected as ParseErrors and skipped rather than aborting the whole run,
-// since one bad line shouldn't prevent an answer from the rest of the file.
-//
-// This function assumes records are sorted by timestamp descending (most
-// recent first), as guaranteed by the problem's input format. It exploits
-// that ordering to stop reading as soon as it passes the target date,
-// instead of scanning the entire file.
+// FindMostActive reads a cookie log from r and returns every cookie seen the most times
 func FindMostActive(r io.Reader, target time.Time) ([]string, []ParseError) {
 	c := newCounter()
 	var parseErrs []ParseError
@@ -67,9 +59,7 @@ func FindMostActive(r io.Reader, target time.Time) ([]string, []ParseError) {
 			continue
 		}
 
-		// record.Timestamp is now strictly before the target date. Because
-		// the log is sorted descending, nothing after this point can match,
-		// so we stop early instead of scanning the rest of the file.
+		// Stop: remaining logs are older than the target date.
 		break
 	}
 
