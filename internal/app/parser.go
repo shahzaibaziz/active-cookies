@@ -12,14 +12,9 @@ type Record struct {
 	Timestamp time.Time
 }
 
-// headerLine is the exact header this format uses. We skip it if present
-// rather than failing, since the log file always ships with it.
 const headerLine = "cookie,timestamp"
 
-// ParseLine parses a single CSV line of the form "cookie,timestamp" into a
-// Record. The timestamp must be RFC3339 formatted, matching the sample data.
-// An error is returned for blank lines, wrong field counts, or unparseable
-// timestamps, so the caller can decide whether to skip or abort.
+// ParseLine parses a single CSV line of the form "cookie,timestamp" into a Record
 func ParseLine(line string) (Record, error) {
 	trimmed := strings.TrimSpace(line)
 	if trimmed == "" {
@@ -46,7 +41,6 @@ func ParseLine(line string) (Record, error) {
 }
 
 // IsHeaderLine reports whether the given line is the expected CSV header,
-// so callers can skip it without treating it as a malformed record.
 func IsHeaderLine(line string) bool {
 	return strings.TrimSpace(line) == headerLine
 }
